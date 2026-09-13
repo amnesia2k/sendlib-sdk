@@ -1,12 +1,15 @@
-name: Release candidate
+name: Release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  pull_request:
+    branches:
+      - master
+    types:
+      - closed
+  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 concurrency:
@@ -15,17 +18,19 @@ concurrency:
 
 jobs:
   publish:
-    name: Publish verified package to next
-    if: github.repository == 'amnesia2k/sendlib-sdk'
+    name: Publish verified release
+    if: github.repository == 'amnesia2k/sendlib-sdk' && (github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'changeset-release/master'))
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: npm-production
 
     steps:
-      - name: Check out the tagged commit
+      - name: Check out the release commit
         uses: actions/checkout@v7
         with:
+          fetch-depth: 0
           persist-credentials: false
+          ref: ${{ github.event.pull_request.merge_commit_sha || github.sha }}
 
       - name: Set up Node.js and npm registry
         uses: actions/setup-node@v7
@@ -42,15 +47,40 @@ jobs:
       - name: Install locked dependencies
         run: bun ci
 
-      - name: Verify release tag and changelog
-        run: node ./scripts/verify-release-tag.mjs
+      - name: Resolve release tag
+        id: release
+        shell: bash
+        run: node -e "const { appendFileSync, readFileSync } = require('node:fs'); const { version } = JSON.parse(readFileSync('package.json', 'utf8')); appendFileSync(process.env.GITHUB_OUTPUT, 'tag=v' + version + '\n');"
+
+      - name: Verify release version and changelog
+        run: node ./scripts/verify-release-tag.mjs "${{ steps.release.outputs.tag }}"
 
       - name: Run complete release checks
         run: bun run prepublishOnly
 
-      - name: Publish immutable candidate with provenance
-        run: npm publish --tag next --access public --provenance
+      - name: Create protected release tag
         env:
-          # Required only to bootstrap the first package before npm trusted
-          # publishing can be attached. Remove this environment secret after OIDC works.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_SHA: ${{ github.event.pull_request.merge_commit_sha || github.sha }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          if existing_sha="$(gh api "repos/${{ github.repository }}/git/ref/tags/$RELEASE_TAG" --jq .object.sha 2>/dev/null)"; then
+            if [ "$existing_sha" != "$RELEASE_SHA" ]; then
+              echo "Tag $RELEASE_TAG already points to $existing_sha instead of $RELEASE_SHA" >&2
+              exit 1
+            fi
+            echo "Tag $RELEASE_TAG already points to the verified release commit."
+          else
+            gh api --method POST "repos/${{ github.repository }}/git/refs" -f ref="refs/tags/$RELEASE_TAG" -f sha="$RELEASE_SHA"
+          fi
+
+      - name: Publish immutable package with trusted publishing and provenance
+        run: npm publish --tag latest --access public --provenance
+
+      - name: Create GitHub release from the changelog
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          node ./scripts/extract-release-notes.mjs "$RUNNER_TEMP/release-notes.md"
+          gh release create "$RELEASE_TAG" --verify-tag --title "$RELEASE_TAG" --notes-file "$RUNNER_TEMP/release-notes.md"
