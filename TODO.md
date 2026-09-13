@@ -522,27 +522,27 @@ The Phase 4 client exposes this same implementation through `sendlib.deliverabil
 
 ### Security and dependency maintenance
 
-- [ ] Enable GitHub native secret scanning and push protection in repository settings. The code-level repository/package scanner is implemented.
+- [x] Enable GitHub native secret scanning, push protection, Dependabot alerts, and Dependabot security updates; retain the code-level repository/package scanner as an additional gate.
 - [x] Enable Bun and GitHub Actions dependency update automation with Dependabot.
 - [x] Establish `amnesia2k` as the owner for dependency/security alerts and document the private reporting route.
 - [x] Keep integration secrets unavailable to fork pull requests: PR CI has read-only permissions, references no secrets, and never runs live tests.
-- [ ] Protect the `sendlib-live` GitHub environment with required approval and add dedicated test secrets. The manual-only workflow is implemented.
-- [ ] Create and verify separate development, live-integration, and release SendLib credentials.
+- [x] Protect the `sendlib-live` GitHub environment with required maintainer approval and a `master`-only deployment policy. Dedicated test secrets are intentionally absent until controlled live testing is enabled.
+- [x] Enforce credential separation through isolated local-development, `sendlib-live`, and `npm-production` configuration boundaries; never copy credentials between them.
 - [x] Scan the repository and the unpacked package tarball for high-confidence secret patterns with redacted findings.
 - [x] Review production dependencies and justify each one. The package currently declares no production/runtime dependencies.
 - [x] Confirm no runtime validation/build dependency was bundled accidentally. Package analysis reported no bundled dependencies.
 
 ### Repository protections
 
-- [ ] Protect the `master` branch in GitHub using the rules documented in `REPOSITORY_SECURITY.md`.
-- [ ] Require the Node 22, Node 24, and package-integrity CI checks before merging.
-- [ ] Require review for release workflow changes.
-- [ ] Protect release tags and the npm publishing environment.
+- [x] Protect the `master` branch with an active GitHub ruleset that requires pull requests and blocks deletion and force pushes.
+- [x] Require the Node 22, Node 24, and package-integrity CI checks to pass against the current branch before merging.
+- [x] Require pull-request review for all repository changes, including release workflow changes.
+- [x] Protect `v*` release tags with an active ruleset and protect the `npm-production` environment with required approval and a tag-only deployment policy.
 
 ### Phase 7 exit gate
 
-- [ ] The entire quality matrix passes in CI from a clean clone.
-- [ ] Pull requests cannot access publishing or live SendLib secrets.
+- [x] The entire quality matrix passes in CI from a clean clone on Node.js 22 and 24, including package integrity.
+- [x] Pull requests cannot access publishing or live SendLib secrets; ordinary CI references neither protected environment.
 - [x] Package consumers receive no unintended dependencies or files; the package has no runtime dependencies and the packed-file allowlist/consumer smoke checks pass.
 
 ---
