@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing vX.Y.Z tag to publish or recover
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -16,10 +22,12 @@ concurrency:
 jobs:
   publish:
     name: Publish verified release
-    if: github.repository == 'amnesia2k/sendlib-sdk'
+    if: github.repository == 'amnesia2k/sendlib-sdk' && (github.event_name == 'push' || startsWith(inputs.tag, 'v'))
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: npm-production
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
 
     steps:
       - name: Check out the release commit
@@ -27,7 +35,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-          ref: ${{ github.ref }}
+          ref: ${{ env.RELEASE_TAG }}
 
       - name: Set up Node.js and npm registry
         uses: actions/setup-node@v7
@@ -45,18 +53,19 @@ jobs:
         run: bun ci
 
       - name: Verify release version and changelog
-        run: node ./scripts/verify-release-tag.mjs "${{ github.ref_name }}"
+        run: node ./scripts/verify-release-tag.mjs "$RELEASE_TAG"
 
       - name: Run complete release checks
         run: bun run prepublishOnly
 
       - name: Publish immutable package with trusted publishing and provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --tag latest --access public --provenance
 
       - name: Create GitHub release from the changelog
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_TAG: ${{ github.ref_name }}
         run: |
           node ./scripts/extract-release-notes.mjs "$RUNNER_TEMP/release-notes.md"
           gh release create "$RELEASE_TAG" --verify-tag --title "$RELEASE_TAG" --notes-file "$RUNNER_TEMP/release-notes.md"

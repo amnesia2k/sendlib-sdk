@@ -52,7 +52,7 @@ npm run release:publish
 
 The command requires a clean `master` branch matching `origin/master`. It verifies the version and changelog, runs every release check, creates the matching `vX.Y.Z` tag, and pushes only that tag. The tag starts the protected **Release** workflow, which publishes the package under npm's default `latest` tag using trusted publishing and provenance, then creates the GitHub Release.
 
-The local command never contacts npm and never requires an npm password, token, or OTP. Never move or reuse a published version's tag.
+The local command never contacts npm and never requires an npm password, token, or OTP. npm authentication is confined to the protected GitHub environment. Never move or reuse a published version's tag. If publication fails after a tag is pushed, use the workflow's manual recovery input with that existing tag; do not create another tag for the same version.
 
 Verify the published version with a clean `npm install @sendlib/node-sdk` and check the npm provenance statement. The GitHub release is created only after npm publication succeeds.
 
