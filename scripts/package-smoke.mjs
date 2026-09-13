@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { access, mkdir, mkdtemp, readdir, rm, writeFile } from 'node:fs/promises';
+import { access, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -8,6 +8,10 @@ const projectRoot = fileURLToPath(new URL('../', import.meta.url));
 const temporaryRoot = join(projectRoot, '.tmp');
 const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const useShell = process.platform === 'win32';
+const manifest = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
+
+assert.equal(typeof manifest.version, 'string', 'Expected package.json to contain a version');
+const expectedVersion = JSON.stringify(manifest.version);
 
 function run(command, arguments_, options = {}) {
   const result = spawnSync(command, arguments_, {
@@ -97,7 +101,7 @@ try {
     'runtime.mjs',
     [
       "import { VERSION, analyzeDeliverability, Sendlib, SendlibError } from '@sendlib/node-sdk';",
-      "if (VERSION !== '0.1.0') throw new Error(`Unexpected ESM version: ${VERSION}`);",
+      `if (VERSION !== ${expectedVersion}) throw new Error(\`Unexpected ESM version: \${VERSION}\`);`,
       "const report = analyzeDeliverability({ to: 'test@example.test', subject: 'Test', html: '<p>Test</p>', text: 'Test' });",
       "if (!report.passedAutomatedChecks) throw new Error('Unexpected ESM deliverability warning');",
       "if (!(new SendlibError('Smoke test') instanceof Error)) throw new Error('Unexpected ESM error export');",
@@ -132,7 +136,7 @@ try {
     'runtime.cjs',
     [
       "const { VERSION, analyzeDeliverability, Sendlib, SendlibError } = require('@sendlib/node-sdk');",
-      "if (VERSION !== '0.1.0') throw new Error(`Unexpected CommonJS version: ${VERSION}`);",
+      `if (VERSION !== ${expectedVersion}) throw new Error(\`Unexpected CommonJS version: \${VERSION}\`);`,
       "const report = analyzeDeliverability({ to: 'test@example.test', subject: 'Test', html: '<p>Test</p>', text: 'Test' });",
       "if (!report.passedAutomatedChecks) throw new Error('Unexpected CommonJS deliverability warning');",
       "if (!(new SendlibError('Smoke test') instanceof Error)) throw new Error('Unexpected CommonJS error export');",

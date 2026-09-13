@@ -1,6 +1,6 @@
 # @sendlib/node-sdk
 
-## 0.1.1
+## 0.1.1 — 2026-09-13
 
 ### Patch Changes
 
