@@ -7,7 +7,7 @@ A typed, server-side Node.js SDK for SendLib's transactional email API, with cus
 
 ## Status
 
-`@sendlib/node-sdk` uses `latest` for stable releases and `next` for release candidates. The project is currently in the `0.x` release line, so review the changelog before upgrading a minor version. Confirm the package name and available versions on npm before installing; do not use similarly named packages.
+`@sendlib/node-sdk` publishes approved releases under npm's `latest` tag. The project is currently in the `0.x` release line, so review the changelog before upgrading a minor version. Confirm the package name and available versions on npm before installing; do not use similarly named packages.
 
 - Source: [github.com/amnesia2k/sendlib-sdk](https://github.com/amnesia2k/sendlib-sdk)
 - SDK issues: [GitHub Issues](https://github.com/amnesia2k/sendlib-sdk/issues)

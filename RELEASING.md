@@ -1,12 +1,12 @@
 # Release process
 
-Releases are immutable, reviewed, and promoted without rebuilding. The first public version is `0.1.0`.
+Releases are immutable, reviewed, and published without rebuilding. The first public version is `0.1.0`.
 
 ## One-time npm bootstrap
 
 The package name is `@sendlib/node-sdk`, so an npm organization named `sendlib` must exist and `amnesia2k` must have package-creation permission. A personal `amnesia2k` account alone can publish only under the `@amnesia2k` user scope.
 
-Before the first candidate:
+Before the first release:
 
 1. Create or join the `sendlib` npm organization and confirm `amnesia2k` can publish public packages.
 2. Keep account 2FA set to `auth-and-writes` and save recovery codes securely.
@@ -14,7 +14,7 @@ Before the first candidate:
 4. Store that token as `NPM_TOKEN` only in the protected GitHub `npm-production` environment.
 5. Never store it as a repository-level secret, local project file, workflow literal, or long-lived general-purpose token.
 
-The bootstrap token is needed because npm trusted publishing is configured from an existing package's settings. After the first candidate exists, configure its npm trusted publisher with these exact values:
+The bootstrap token is needed because npm trusted publishing is configured from an existing package's settings. After the first package version exists, configure its npm trusted publisher with these exact values:
 
 - Provider: GitHub Actions
 - GitHub user: `amnesia2k`
@@ -23,11 +23,11 @@ The bootstrap token is needed because npm trusted publishing is configured from 
 - Environment: `npm-production`
 - Allowed action: direct `npm publish`
 
-Then run a later candidate through OIDC, verify provenance, delete the `NPM_TOKEN` environment secret, and revoke the bootstrap token on npm. Do not fall back to a long-lived classic token.
+Then run a later release through OIDC, verify provenance, delete the `NPM_TOKEN` environment secret, and revoke the bootstrap token on npm. Do not fall back to a long-lived classic token.
 
 ## Version preparation
 
-Consumer-visible pull requests add a changeset with `bun run changeset`. Run the manual **Version packages** workflow from `master` to create or update a reviewed release PR. For the initial `0.1.0`, review the already-selected package version and replace `Unreleased` in its changelog heading with the release date.
+Consumer-visible pull requests add a changeset with `bun run changeset`. After such a pull request reaches `master`, the **Version packages** workflow automatically creates or updates a reviewed release PR. It can also be started manually when recovery is necessary. The version script dates the generated changelog entry automatically; confirm that date before merging the release PR.
 
 Before merging a release PR:
 
@@ -40,24 +40,13 @@ bun run smoke:package
 
 Review the package name, version, exports, license, README, changelog, dependency list, and packed files. Confirm no credential or personal live-test data is present.
 
-## Candidate publication
+## Publication
 
-After the release commit passes protected CI, create and push exactly one protected tag matching the package version:
+Merging the Changesets release PR starts the approval-gated **Release** workflow. After maintainer approval, it verifies the version and dated changelog, reruns every release check, creates exactly one protected `vX.Y.Z` tag from the merge commit, publishes that source under the `latest` dist-tag with trusted publishing and provenance, and creates the matching GitHub release from the changelog.
 
-```sh
-git tag v0.1.0
-git push origin v0.1.0
-```
+Do not manually create a release tag or run `npm publish` during the normal flow. If automation fails, diagnose the run before using the manual workflow-dispatch recovery; never move or reuse a published version's tag.
 
-The tag starts the approval-gated **Release candidate** workflow. It verifies that the tag and dated changelog match, reruns every release check, and publishes the tagged source as `@sendlib/node-sdk@0.1.0` under the `next` dist-tag with provenance.
-
-Do not create a different artifact for stable release. Install and test `@sendlib/node-sdk@next`, then promote the exact version:
-
-```sh
-npm dist-tag add @sendlib/node-sdk@0.1.0 latest
-```
-
-The promotion is an npm registry metadata change only. It must not rebuild or republish the package. Create the matching GitHub release from the already-pushed tag and the reviewed changelog.
+Verify the published version with a clean `npm install @sendlib/node-sdk` and check the npm provenance statement. The GitHub release is created only after npm publication succeeds.
 
 ## Failed release
 
