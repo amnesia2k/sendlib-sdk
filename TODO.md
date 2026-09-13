@@ -51,7 +51,7 @@ This checklist breaks the work in `../sendlib-node-sdk.md` into reviewable phase
 - [x] Confirm the permanent package name. Selected: `@sendlib/node-sdk`.
 - [x] Check that the intended npm name is available. Confirmed by the maintainer.
 - [x] Establish non-misleading community branding. The README and npm description say “unofficial” and “community-maintained,” disclaim sponsorship/endorsement, separate SDK support from SendLib service support, and avoid SendLib logos or copied visual branding.
-- [x] Decide whether this package will have its own Git repository. Selected: standalone repository with `main` as its default branch.
+- [x] Decide whether this package will have its own Git repository. Selected: standalone repository with `master` as its default branch.
 - [x] Choose the repository URL, issue tracker URL, and documentation/homepage URL. Selected: `amnesia2k/sendlib-sdk`, its Issues page, and its README homepage.
 - [x] Choose and record the package owner and maintainers. Owner: personal GitHub account `amnesia2k`; maintainer: Olatilewa Olatoye (`tilewa.olatoyee@gmail.com`).
 - [x] Choose an SPDX license; replace the temporary `ISC` value if another license is selected. Selected: MIT, copyright 2026 Olatilewa Olatoye.
@@ -534,7 +534,7 @@ The Phase 4 client exposes this same implementation through `sendlib.deliverabil
 
 ### Repository protections
 
-- [ ] Protect the main branch in GitHub using the rules documented in `REPOSITORY_SECURITY.md`.
+- [ ] Protect the `master` branch in GitHub using the rules documented in `REPOSITORY_SECURITY.md`.
 - [ ] Require the Node 22, Node 24, and package-integrity CI checks before merging.
 - [ ] Require review for release workflow changes.
 - [ ] Protect release tags and the npm publishing environment.

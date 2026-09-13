@@ -12,7 +12,7 @@ In **Settings → Code security and analysis**:
 
 ## Branch and tag protection
 
-Create a ruleset for `main` that:
+Create a ruleset for `master` that:
 
 - Requires a pull request before merging.
 - Requires the `Node 22 quality`, `Node 24 quality`, and `Package integrity` checks.
@@ -23,7 +23,7 @@ Create a tag ruleset for release tags matching `v*` that blocks deletion and upd
 
 ## Protected live-test environment
 
-Create a GitHub Actions environment named `sendlib-live`, restrict it to the `main` branch, and require maintainer approval. Store only dedicated non-production test values in its environment secrets:
+Create a GitHub Actions environment named `sendlib-live`, restrict it to the `master` branch, and require maintainer approval. Store only dedicated non-production test values in its environment secrets:
 
 - `SENDLIB_API_KEY`
 - `SENDLIB_TEST_RECIPIENT`

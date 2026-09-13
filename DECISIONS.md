@@ -9,7 +9,7 @@ This file records decisions that affect the public package or its maintenance. I
 - npm package name: `@sendlib/node-sdk`
 - Initial public version: `0.1.0`
 - Positioning: community-maintained and unofficial unless SendLib explicitly adopts it later
-- Repository model: standalone Git repository using `main` as the default branch
+- Repository model: standalone Git repository using `master` as the default branch
 - GitHub owner: `amnesia2k` (personal account, not an organization)
 - Repository: <https://github.com/amnesia2k/sendlib-sdk>
 - Issues: <https://github.com/amnesia2k/sendlib-sdk/issues>
