@@ -422,17 +422,26 @@ if (finalStatus.status === 'paused_limit_reached') {
 
 The polling lifecycle is:
 
-```mermaid
-flowchart TD
-  A[Create batch once<br/>POST /api/batch] --> B[Receive queued batchId]
-  B --> C[Retrieve same batchId<br/>GET /api/batch/:batchId]
-  C -->|queued or processing| D[Wait configured interval]
-  D --> C
-  C -->|done| E[Return final response]
-  C -->|failed| F[Throw SendlibBatchFailedError]
-  C -->|paused_limit_reached| G[Return by default]
-  C -->|deadline| H[Throw SendlibBatchWaitTimeoutError]
-  C -->|caller abort| I[Throw SendlibAbortError]
+```text
+Create the batch once: POST /api/batch
+                  |
+                  v
+         Receive queued batchId
+                  |
+                  v
+Retrieve status: GET /api/batch/:batchId
+                  |
+                  +-- queued or processing --> wait --> retrieve again
+                  |
+                  +-- done ------------------> return final response
+                  |
+                  +-- failed ----------------> throw SendlibBatchFailedError
+                  |
+                  +-- paused_limit_reached --> return status by default
+                  |
+                  +-- deadline -------------> throw SendlibBatchWaitTimeoutError
+                  |
+                  +-- caller abort ----------> throw SendlibAbortError
 ```
 
 The overall deadline also cancels active GET attempts and retry delays. `wait` never submits another batch.
