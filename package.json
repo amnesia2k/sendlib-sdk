@@ -1,6 +1,6 @@
 {
   "name": "@sendlib/node-sdk",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Unofficial, community-maintained TypeScript SDK for the SendLib transactional email API.",
   "type": "module",
   "main": "./dist/index.cjs",

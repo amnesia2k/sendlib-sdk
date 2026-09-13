@@ -1,5 +1,11 @@
 # @sendlib/node-sdk
 
+## 0.1.2 — 2026-09-13
+
+### Patch Changes
+
+- [#11](https://github.com/amnesia2k/sendlib-sdk/pull/11) [`b51c8e4`](https://github.com/amnesia2k/sendlib-sdk/commit/b51c8e408fa23ed6c67738f4d614d306dfa5fb45) Thanks [@amnesia2k](https://github.com/amnesia2k)! - Automate release PR creation, protected version tagging, trusted npm publication, and GitHub release notes while retaining the protected environment approval gate.
+
 This changelog records user-visible changes to the package. Versions follow [Semantic Versioning](https://semver.org/), and release entries are managed with Changesets.
 
 ## 0.1.1 — 2026-09-13
