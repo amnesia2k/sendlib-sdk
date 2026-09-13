@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: SendLib service and account support
+    url: https://sendlib.samueltuoyo.com/docs
+    about: Use SendLib's official channels for accounts, billing, Gmail connections, quotas, and service availability.
+  - name: Private security report
+    url: https://github.com/amnesia2k/sendlib-sdk/security/advisories/new
+    about: Report suspected SDK vulnerabilities privately.

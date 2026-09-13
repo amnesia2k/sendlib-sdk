@@ -1,0 +1,36 @@
+name: SendLib API contract change
+description: Report documented or observed upstream API drift
+title: '[Contract]: '
+labels: [api-contract]
+body:
+  - type: markdown
+    attributes:
+      value: Provide sanitized evidence only. Never submit credentials, personal addresses, or production content.
+  - type: dropdown
+    id: evidence
+    attributes:
+      label: Evidence type
+      options:
+        - Official documentation change
+        - Sanitized observed response
+        - SendLib maintainer confirmation
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source URL or reference
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: What changed?
+    validations:
+      required: true
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: SDK compatibility impact
+    validations:
+      required: true

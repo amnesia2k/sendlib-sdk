@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "batchId": "64f1a2b3c4d5e6f7a8b9c0d1",
+  "status": "processing",
+  "total": 2,
+  "sent": 1,
+  "failed": 0,
+  "progress": 50,
+  "recipients": [
+    {
+      "email": "john@example.com",
+      "status": "sent",
+      "messageId": "18b3f...",
+      "error": null
+    },
+    {
+      "email": "jane@example.com",
+      "status": "pending",
+      "messageId": null,
+      "error": null
+    }
+  ]
+}

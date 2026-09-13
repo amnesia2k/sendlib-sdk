@@ -1,0 +1,119 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Node ${{ matrix.node }} quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
+      - name: Install locked dependencies
+        run: bun ci
+
+      - name: Check formatting
+        run: bun run format:check
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Type-check source and tests
+        run: bun run typecheck
+
+      - name: Type-check examples
+        run: bun run typecheck:examples
+
+      - name: Run unit tests
+        run: bun run test:unit
+
+      - name: Run contract tests
+        run: bun run test:contract
+
+      - name: Enforce coverage thresholds
+        run: bun run test:coverage
+
+      - name: Build from a clean output directory
+        run: bun run build
+
+      - name: Verify exports
+        run: bun run check:exports
+
+      - name: Verify examples
+        run: bun run check:examples
+
+      - name: Upload coverage and build diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostics-node-${{ matrix.node }}
+          path: |
+            coverage/
+            dist/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  package-integrity:
+    name: Package integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: quality
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up supported Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
+      - name: Install locked dependencies
+        run: bun ci
+
+      - name: Scan repository and packed artifact for secrets
+        run: bun run security:scan
+
+      - name: Validate package metadata and types
+        run: bun run pack:check
+
+      - name: Test packed ESM and CommonJS consumers
+        run: bun run smoke:package
