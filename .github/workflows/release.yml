@@ -53,7 +53,7 @@ jobs:
         run: bun ci
 
       - name: Verify release version and changelog
-        run: node ./scripts/verify-release-tag.mjs "$RELEASE_TAG"
+        run: GITHUB_REF_NAME="$RELEASE_TAG" node ./scripts/verify-release-tag.mjs "$RELEASE_TAG"
 
       - name: Run complete release checks
         run: bun run prepublishOnly
