@@ -1,4 +1,4 @@
-# Sendlib Node.js SDK
+# SendLib Node.js SDK
 
 > [!IMPORTANT]
 > `@sendlib/node-sdk` is an independent, community-maintained SDK and is not an official SendLib product. Contributors may include people affiliated with SendLib, but an individual's contribution does not by itself mean that SendLib officially sponsors, endorses, maintains, or supports this package. Report SDK problems to this project's [issue tracker](https://github.com/amnesia2k/sendlib-sdk/issues). SendLib account, Gmail connection, billing, quota, and service questions belong with [SendLib's official documentation and support](https://sendlib.samueltuoyo.com/docs).

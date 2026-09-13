@@ -28,6 +28,7 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v7
         with:
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Set up Node.js ${{ matrix.node }}
@@ -42,6 +43,10 @@ jobs:
 
       - name: Install locked dependencies
         run: bun ci
+
+      - name: Verify Changesets status
+        if: matrix.node == 22
+        run: bun run changeset:status --since=origin/master
 
       - name: Check formatting
         run: bun run format:check

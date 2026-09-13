@@ -39,7 +39,9 @@ bun run smoke:package
 4. Maintain 100% statement, branch, function, and line coverage.
 5. Run `bun run ci` and `bun run security:scan`; for packaging changes, also run `bun run smoke:package` and `bun run pack:check`.
 6. Update README examples and `CONTRACT.md` when relevant.
-7. Add a Changeset for a user-visible change once the Changesets workflow is introduced in the release phase.
+7. Add a Changeset for every consumer-visible change with `bun run changeset`; pure test, CI, and internal-only maintenance does not require one.
+
+Maintainers should follow the approval-gated process in [RELEASING.md](./RELEASING.md) when preparing or publishing a version.
 
 Commits and pull requests must not contain real API keys, authorization headers, personal email addresses, production message bodies, attachment content, or unsanitized API responses.
 

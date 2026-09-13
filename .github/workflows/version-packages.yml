@@ -1,0 +1,47 @@
+name: Version packages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: version-packages
+  cancel-in-progress: false
+
+jobs:
+  version:
+    name: Create or update release PR
+    if: github.repository == 'amnesia2k/sendlib-sdk' && github.ref_name == 'master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out master
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
+      - name: Install locked dependencies
+        run: bun ci
+
+      - name: Create or update release pull request
+        uses: changesets/action/version@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: bun run version:packages
+          commit-message: 'chore(release): version packages'
+          pr-title: 'chore(release): version packages'
+          pr-base-branch: master

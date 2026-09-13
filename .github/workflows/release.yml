@@ -1,0 +1,56 @@
+name: Release candidate
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: npm-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish verified package to next
+    if: github.repository == 'amnesia2k/sendlib-sdk'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: npm-production
+
+    steps:
+      - name: Check out the tagged commit
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js and npm registry
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
+      - name: Install locked dependencies
+        run: bun ci
+
+      - name: Verify release tag and changelog
+        run: node ./scripts/verify-release-tag.mjs
+
+      - name: Run complete release checks
+        run: bun run prepublishOnly
+
+      - name: Publish immutable candidate with provenance
+        run: npm publish --tag next --access public --provenance
+        env:
+          # Required only to bootstrap the first package before npm trusted
+          # publishing can be attached. Remove this environment secret after OIDC works.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
