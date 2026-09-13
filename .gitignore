@@ -8,6 +8,10 @@ pnpm-lock.yaml
 yarn.lock
 bun.lockb
 
+# Maintainer-only planning and decision notes
+TODO.md
+DECISIONS.md
+
 # Build, test, and temporary output
 dist/
 coverage/
