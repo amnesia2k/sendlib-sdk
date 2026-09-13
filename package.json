@@ -45,7 +45,7 @@
     "check:exports": "node ./scripts/check-exports.mjs",
     "changeset": "changeset",
     "changeset:status": "changeset status",
-    "version:packages": "changeset version && bun install",
+    "version:packages": "changeset version && node ./scripts/date-changelog.mjs && bun install",
     "security:scan": "node ./scripts/security-scan.mjs",
     "pack:check": "publint --strict --pack bun && attw --pack . --profile strict",
     "smoke:package": "bun run build && node ./scripts/package-smoke.mjs",
