@@ -45,7 +45,7 @@ jobs:
         run: bun ci
 
       - name: Verify Changesets status
-        if: matrix.node == 22
+        if: ${{ matrix.node == 22 && github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/') && !startsWith(github.head_ref, 'release/v') }}
         run: bun run changeset:status --since=origin/master
 
       - name: Check formatting
