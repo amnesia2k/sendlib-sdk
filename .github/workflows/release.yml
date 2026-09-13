@@ -58,14 +58,42 @@ jobs:
       - name: Run complete release checks
         run: bun run prepublishOnly
 
+      - name: Check whether this version is already published
+        id: registry
+        shell: bash
+        run: |
+          package_name="$(node -p "require('./package.json').name")"
+          package_version="$(node -p "require('./package.json').version")"
+          if npm view "$package_name@$package_version" version >/dev/null 2>&1; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish immutable package with trusted publishing and provenance
+        if: steps.registry.outputs.published != 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --tag latest --access public --provenance
+
+      - name: Remove obsolete prerelease tag
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        shell: bash
+        run: |
+          package_name="$(node -p "require('./package.json').name")"
+          next_version="$(npm view "$package_name" dist-tags.next --json 2>/dev/null || true)"
+          if [ -n "$next_version" ] && [ "$next_version" != "null" ]; then
+            npm dist-tag rm "$package_name" next
+          fi
 
       - name: Create GitHub release from the changelog
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          node ./scripts/extract-release-notes.mjs "$RUNNER_TEMP/release-notes.md"
-          gh release create "$RELEASE_TAG" --verify-tag --title "$RELEASE_TAG" --notes-file "$RUNNER_TEMP/release-notes.md"
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "GitHub Release $RELEASE_TAG already exists."
+          else
+            node ./scripts/extract-release-notes.mjs "$RUNNER_TEMP/release-notes.md"
+            gh release create "$RELEASE_TAG" --verify-tag --title "$RELEASE_TAG" --notes-file "$RUNNER_TEMP/release-notes.md"
+          fi
