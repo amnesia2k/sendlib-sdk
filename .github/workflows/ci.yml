@@ -46,6 +46,9 @@ jobs:
       - name: Check formatting
         run: bun run format:check
 
+      - name: Build from a clean output directory
+        run: bun run build
+
       - name: Lint
         run: bun run lint
 
@@ -63,9 +66,6 @@ jobs:
 
       - name: Enforce coverage thresholds
         run: bun run test:coverage
-
-      - name: Build from a clean output directory
-        run: bun run build
 
       - name: Verify exports
         run: bun run check:exports
@@ -108,6 +108,9 @@ jobs:
 
       - name: Install locked dependencies
         run: bun ci
+
+      - name: Build package
+        run: bun run build
 
       - name: Scan repository and packed artifact for secrets
         run: bun run security:scan
