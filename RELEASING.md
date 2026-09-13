@@ -42,9 +42,17 @@ Review the package name, version, exports, license, README, changelog, dependenc
 
 ## Publication
 
-Merging the Changesets release PR starts the approval-gated **Release** workflow. After maintainer approval, it verifies the version and dated changelog, reruns every release check, creates exactly one protected `vX.Y.Z` tag from the merge commit, publishes that source under the `latest` dist-tag with trusted publishing and provenance, and creates the matching GitHub release from the changelog.
+After merging the Changesets release PR, update local `master` and run one command:
 
-Do not manually create a release tag or run `npm publish` during the normal flow. If automation fails, diagnose the run before using the manual workflow-dispatch recovery; never move or reuse a published version's tag.
+```sh
+git switch master
+git pull --ff-only
+npm run release:publish
+```
+
+The command requires a clean `master` branch matching `origin/master`. It verifies the version and changelog, runs every release check, creates the matching `vX.Y.Z` tag, and pushes only that tag. The tag starts the protected **Release** workflow, which publishes the package under npm's default `latest` tag using trusted publishing and provenance, then creates the GitHub Release.
+
+The local command never contacts npm and never requires an npm password, token, or OTP. Never move or reuse a published version's tag.
 
 Verify the published version with a clean `npm install @sendlib/node-sdk` and check the npm provenance statement. The GitHub release is created only after npm publication succeeds.
 
