@@ -46,7 +46,7 @@ jobs:
 
       - name: Verify Changesets status
         if: matrix.node == 22
-        run: bun run changeset:status
+        run: bun run changeset:status --since=origin/master
 
       - name: Check formatting
         run: bun run format:check
