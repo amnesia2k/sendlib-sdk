@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 const manifest = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
 const changelog = await readFile(new URL('../CHANGELOG.md', import.meta.url), 'utf8');
-const tag = process.env.GITHUB_REF_NAME ?? process.argv[2];
+const tag = process.argv[2] ?? process.env.GITHUB_REF_NAME;
 
 if (typeof manifest.version !== 'string' || manifest.version.length === 0) {
   throw new TypeError('package.json must contain a non-empty version');
