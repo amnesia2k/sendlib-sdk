@@ -17,6 +17,22 @@ bun install --frozen-lockfile
 bun run ci
 ```
 
+## Contribution workflow
+
+The repository owner and administrators may push directly to `master`. Contributors must use a pull request:
+
+1. Fork the repository. Collaborators with write access may instead create a branch in this repository.
+2. Create a focused branch from the latest `master`, for example `fix/timeout-handling` or `docs/template-examples`.
+3. Make and verify the change locally.
+4. Push the feature branch to your fork or to this repository if you have collaborator access. Do not push directly to `master`.
+5. Open a pull request targeting `master` and complete the pull-request template.
+6. Wait for the `SDK checks` job and maintainer review. Address review comments by pushing additional commits to the same branch; a new pull request is not needed.
+7. A maintainer merges the approved pull request.
+
+The protected `master` branch requires the `SDK checks` job, one approving review, resolved review conversations, and approval after the latest contributor push. If a check fails, open its log, reproduce the failing command locally, and push the fix to the same branch.
+
+Merging a contribution does not publish npm automatically. Maintainers decide when a consumer-visible change is versioned and published through the separate release workflow.
+
 Useful focused commands:
 
 ```sh
@@ -35,8 +51,8 @@ bun run smoke:package
 
 1. Open or reference an issue when behavior, public types, or API compatibility will change.
 2. Keep changes focused and avoid unrelated formatting or dependency churn.
-3. Add runtime and type-level tests for public behavior.
-4. Add focused tests for behavior changed by the contribution. Coverage is measured during release checks with an 80% floor; ordinary pull requests are not blocked on perfect coverage.
+3. Add focused runtime and type-level tests when public behavior changes. Documentation-only and internal workflow changes do not require new runtime tests.
+4. Coverage is measured during release checks with an 80% floor; ordinary pull requests are not blocked on perfect coverage.
 5. Run `bun run ci`. For security or packaging changes, also run `bun run security:scan`, `bun run smoke:package`, and `bun run pack:check`.
 6. Update README examples and `CONTRACT.md` when relevant.
 7. Add a Changeset for every consumer-visible change with `bun run changeset`; pure test, CI, and internal-only maintenance does not require one.
@@ -60,6 +76,6 @@ Never use a live account merely to explore destructive or high-volume behavior. 
 
 ## Review and release
 
-The maintainer reviews correctness, contract evidence, security, compatibility, tests, and documentation. Approval does not guarantee immediate release. Releases are versioned and changelogged through Changesets, then published through the protected release process planned for the repository.
+The maintainer reviews correctness, contract evidence, security, compatibility, tests, and documentation. Approval does not guarantee immediate release. Releases are versioned and changelogged through Changesets, then published through the protected release process.
 
 By participating, you agree to follow [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md). Security vulnerabilities must follow [SECURITY.md](./SECURITY.md), not a public issue.
