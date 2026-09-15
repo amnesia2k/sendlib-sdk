@@ -8,11 +8,13 @@ Link official SendLib documentation or explain why no upstream contract behavior
 
 ## Verification
 
-- [ ] I added or updated runtime and type-level tests.
+- [ ] I added or updated tests when behavior changed, or this change does not require new tests.
 - [ ] `bun run ci` passes.
 - [ ] Packaging checks pass when package metadata or exports changed.
 - [ ] Documentation and examples match the implementation.
-- [ ] I added a Changeset when the change is user-visible and Changesets is available.
+- [ ] I added a Changeset for a consumer-visible SDK change, or this change does not require one.
+
+The maintainer owns versioning and npm publication. Merging this pull request does not publish a package automatically.
 
 ## Safety
 

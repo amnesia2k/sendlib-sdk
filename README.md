@@ -671,6 +671,9 @@ When SendLib's upstream contract changes, this project records evidence in `CONT
 
 ## Contributing and support
 
+- Contributors work on a fork or feature branch and open a pull request into `master`; direct `master` pushes are reserved for repository administrators.
+- Push follow-up commits to the same pull-request branch after review. You do not need to open a new pull request for each revision.
+- Merging a pull request does not automatically publish npm. Maintainers control versioning and releases separately.
 - Read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request.
 - Follow [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md).
 - Use [GitHub Issues](https://github.com/amnesia2k/sendlib-sdk/issues) for SDK bugs, feature requests, and contract changes.
