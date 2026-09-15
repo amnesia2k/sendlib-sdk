@@ -19,11 +19,11 @@ SENDLIB_API_KEY=sl_your_api_key_here
 Create one client and reuse it:
 
 ```ts
-import { Sendlib, VERSION } from "@sendlib/node-sdk";
+import { Sendlib, VERSION } from '@sendlib/node-sdk';
 
 const apiKey = process.env.SENDLIB_API_KEY;
 if (!apiKey) {
-  throw new Error("SENDLIB_API_KEY is required");
+  throw new Error('SENDLIB_API_KEY is required');
 }
 
 export const sendlib = new Sendlib({ apiKey });
@@ -36,10 +36,10 @@ console.log(`Using @sendlib/node-sdk ${VERSION}`);
 ### All constructor options
 
 ```ts
-import { Sendlib, type SendlibFetch } from "@sendlib/node-sdk";
+import { Sendlib, type SendlibFetch } from '@sendlib/node-sdk';
 
 const apiKey = process.env.SENDLIB_API_KEY;
-if (!apiKey) throw new Error("SENDLIB_API_KEY is required");
+if (!apiKey) throw new Error('SENDLIB_API_KEY is required');
 
 const tracedFetch: SendlibFetch = async (input, init) => {
   const startedAt = performance.now();
@@ -48,14 +48,14 @@ const tracedFetch: SendlibFetch = async (input, init) => {
     return await fetch(input, init);
   } finally {
     // Do not log authorization headers, recipients, or message bodies.
-    console.info("SendLib HTTP duration (ms):", performance.now() - startedAt);
+    console.info('SendLib HTTP duration (ms):', performance.now() - startedAt);
   }
 };
 
 const configuredSendlib = new Sendlib({
   apiKey,
-  baseUrl: "https://sendlib.samueltuoyo.com",
-  authMode: "bearer", // Or 'x-api-key'. The default is 'bearer'.
+  baseUrl: 'https://sendlib.samueltuoyo.com',
+  authMode: 'bearer', // Or 'x-api-key'. The default is 'bearer'.
   timeoutMs: 30_000,
   maxRetries: 2, // Applies only to operations that are safe to retry.
   fetch: tracedFetch,
@@ -75,16 +75,16 @@ The SDK never loads `.env` itself. `baseUrl` is mainly useful for a compatible p
 ```ts
 const response = await sendlib.emails.send({
   from: '"Example Support" <support@example.com>',
-  to: ["ada@example.com", "grace@example.com"],
-  cc: "account-owner@example.com",
-  bcc: ["audit@example.com", "records@example.com"],
-  replyTo: "helpdesk@example.com",
-  subject: "Your account update",
-  html: "<p>Your requested account update is ready.</p>",
-  text: "Your requested account update is ready.",
+  to: ['ada@example.com', 'grace@example.com'],
+  cc: 'account-owner@example.com',
+  bcc: ['audit@example.com', 'records@example.com'],
+  replyTo: 'helpdesk@example.com',
+  subject: 'Your account update',
+  html: '<p>Your requested account update is ready.</p>',
+  text: 'Your requested account update is ready.',
 });
 
-console.log("Debug issue count:", response.debug?.issues?.length ?? 0);
+console.log('Debug issue count:', response.debug?.issues?.length ?? 0);
 ```
 
 Custom sends require `subject` and `html`; `text` is an optional fallback. SendLib accepts either one address or an array in `to`, `cc`, and `bcc`.
@@ -92,20 +92,20 @@ Custom sends require `subject` and `html`; `text` is an optional fallback. SendL
 ### Send an attachment
 
 ```ts
-import { readFile } from "node:fs/promises";
+import { readFile } from 'node:fs/promises';
 
-const pdf = await readFile("./invoice.pdf");
+const pdf = await readFile('./invoice.pdf');
 
 await sendlib.emails.send({
-  to: "customer@example.com",
-  subject: "Your invoice",
-  html: "<p>Your invoice is attached.</p>",
-  text: "Your invoice is attached.",
+  to: 'customer@example.com',
+  subject: 'Your invoice',
+  html: '<p>Your invoice is attached.</p>',
+  text: 'Your invoice is attached.',
   attachments: [
     {
-      filename: "invoice.pdf",
-      content: pdf.toString("base64"),
-      type: "application/pdf",
+      filename: 'invoice.pdf',
+      content: pdf.toString('base64'),
+      type: 'application/pdf',
     },
   ],
 });
@@ -118,11 +118,11 @@ Pass raw base64 in `content`, without a `data:` URL prefix. Batch sends do not s
 ```ts
 await sendlib.emails.send({
   from: '"Example App" <app@example.com>',
-  to: "ada@example.com",
-  template: "password-reset",
+  to: 'ada@example.com',
+  template: 'password-reset',
   data: {
-    name: "Ada",
-    code: "482921",
+    name: 'Ada',
+    code: '482921',
   },
 });
 ```
@@ -134,16 +134,16 @@ Use one recipient string in template mode. Template variables must match the edi
 Every HTTP endpoint method accepts `SendlibCallOptions` as its final argument:
 
 ```ts
-import { SendlibAbortError, SendlibTimeoutError } from "@sendlib/node-sdk";
+import { SendlibAbortError, SendlibTimeoutError } from '@sendlib/node-sdk';
 
 const controller = new AbortController();
 
 try {
   const request = sendlib.emails.send(
     {
-      to: "ada@example.com",
-      subject: "Your account update",
-      html: "<p>Your account update is ready.</p>",
+      to: 'ada@example.com',
+      subject: 'Your account update',
+      html: '<p>Your account update is ready.</p>',
     },
     {
       signal: controller.signal,
@@ -155,9 +155,9 @@ try {
   await request;
 } catch (error: unknown) {
   if (error instanceof SendlibAbortError) {
-    console.error("The caller cancelled the send.");
+    console.error('The caller cancelled the send.');
   } else if (error instanceof SendlibTimeoutError) {
-    console.error("The HTTP attempt timed out.");
+    console.error('The HTTP attempt timed out.');
   } else {
     throw error;
   }
@@ -174,13 +174,13 @@ Templates must already exist in the SendLib dashboard. The generic method suppor
 
 ```ts
 await sendlib.templates.send(
-  "my-dashboard-template",
+  'my-dashboard-template',
   {
     from: '"Example App" <app@example.com>',
-    to: "ada@example.com",
+    to: 'ada@example.com',
     data: {
-      name: "Ada",
-      preferences: { locale: "en-NG" },
+      name: 'Ada',
+      preferences: { locale: 'en-NG' },
     },
   },
   { timeoutMs: 10_000 },
@@ -191,8 +191,8 @@ await sendlib.templates.send(
 
 ```ts
 await sendlib.templates.welcome({
-  to: "ada@example.com",
-  data: { name: "Ada", product: "Example Cloud" },
+  to: 'ada@example.com',
+  data: { name: 'Ada', product: 'Example Cloud' },
 });
 ```
 
@@ -202,10 +202,10 @@ Slug: `welcome`.
 
 ```ts
 await sendlib.templates.verifyEmail({
-  to: "ada@example.com",
+  to: 'ada@example.com',
   data: {
-    name: "Ada",
-    link: "https://example.com/verify?token=server-generated-token",
+    name: 'Ada',
+    link: 'https://example.com/verify?token=server-generated-token',
   },
 });
 ```
@@ -216,8 +216,8 @@ Slug: `verify-email`.
 
 ```ts
 await sendlib.templates.passwordReset({
-  to: "ada@example.com",
-  data: { name: "Ada", code: "482921" },
+  to: 'ada@example.com',
+  data: { name: 'Ada', code: '482921' },
 });
 ```
 
@@ -227,8 +227,8 @@ Slug: `password-reset`.
 
 ```ts
 await sendlib.templates.otp({
-  to: "ada@example.com",
-  data: { name: "Ada", code: "731904" },
+  to: 'ada@example.com',
+  data: { name: 'Ada', code: '731904' },
 });
 ```
 
@@ -238,12 +238,12 @@ Slug: `otp`.
 
 ```ts
 await sendlib.templates.invoice({
-  to: "ada@example.com",
+  to: 'ada@example.com',
   data: {
-    name: "Ada",
-    amount: "NGN 12,500.00",
-    invoice_id: "INV-2026-0042",
-    date: "2026-09-15",
+    name: 'Ada',
+    amount: 'NGN 12,500.00',
+    invoice_id: 'INV-2026-0042',
+    date: '2026-09-15',
   },
 });
 ```
@@ -254,11 +254,11 @@ Slug: `invoice`.
 
 ```ts
 await sendlib.templates.paymentSuccessful({
-  to: "ada@example.com",
+  to: 'ada@example.com',
   data: {
-    name: "Ada",
-    amount: "NGN 12,500.00",
-    product: "Example Cloud Pro",
+    name: 'Ada',
+    amount: 'NGN 12,500.00',
+    product: 'Example Cloud Pro',
   },
 });
 ```
@@ -269,11 +269,11 @@ Slug: `payment-successful`.
 
 ```ts
 await sendlib.templates.paymentFailed({
-  to: "ada@example.com",
+  to: 'ada@example.com',
   data: {
-    name: "Ada",
-    amount: "NGN 12,500.00",
-    retry_url: "https://example.com/billing/retry",
+    name: 'Ada',
+    amount: 'NGN 12,500.00',
+    retry_url: 'https://example.com/billing/retry',
   },
 });
 ```
@@ -284,11 +284,11 @@ Slug: `payment-failed`.
 
 ```ts
 await sendlib.templates.subscriptionExpiring({
-  to: "ada@example.com",
+  to: 'ada@example.com',
   data: {
-    name: "Ada",
-    plan: "Pro",
-    date: "2026-09-30",
+    name: 'Ada',
+    plan: 'Pro',
+    date: '2026-09-30',
   },
 });
 ```
@@ -299,11 +299,11 @@ Slug: `subscription-expiring`.
 
 ```ts
 await sendlib.templates.accountSuspended({
-  to: "ada@example.com",
+  to: 'ada@example.com',
   data: {
-    name: "Ada",
-    reason: "Billing verification is required",
-    support_url: "https://example.com/support",
+    name: 'Ada',
+    reason: 'Billing verification is required',
+    support_url: 'https://example.com/support',
   },
 });
 ```
@@ -319,14 +319,14 @@ Analysis is synchronous and local. It does not make an HTTP request, mutate the 
 ### `sendlib.deliverability.analyze()`
 
 ```ts
-import type { SendEmailInput } from "@sendlib/node-sdk";
+import type { SendEmailInput } from '@sendlib/node-sdk';
 
 const email: SendEmailInput = {
   from: '"Example Support" <support@example.com>',
-  to: "ada@example.com",
-  subject: "A quick update about your account",
-  html: "<p>Your requested account update is ready.</p>",
-  text: "Your requested account update is ready.",
+  to: 'ada@example.com',
+  subject: 'A quick update about your account',
+  html: '<p>Your requested account update is ready.</p>',
+  text: 'Your requested account update is ready.',
 };
 
 const report = sendlib.deliverability.analyze(email);
@@ -349,17 +349,14 @@ if (report.passedAutomatedChecks) {
 The package also exports the same analyzer as a standalone function, so no client or API key is required:
 
 ```ts
-import {
-  analyzeDeliverability,
-  type CreateBatchInput,
-} from "@sendlib/node-sdk";
+import { analyzeDeliverability, type CreateBatchInput } from '@sendlib/node-sdk';
 
 const batchDraft: CreateBatchInput = {
   from: '"Example Operations" <operations@example.com>',
-  subject: "Service update for {{name}}",
-  recipients: [{ email: "ada@example.com", variables: { name: "Ada" } }],
-  html: "<p>Hello {{name}}, your service update is ready.</p>",
-  text: "Hello {{name}}, your service update is ready.",
+  subject: 'Service update for {{name}}',
+  recipients: [{ email: 'ada@example.com', variables: { name: 'Ada' } }],
+  html: '<p>Hello {{name}}, your service update is ready.</p>',
+  text: 'Hello {{name}}, your service update is ready.',
 };
 
 const batchReport = analyzeDeliverability(batchDraft);
@@ -378,14 +375,14 @@ Batch sending requires a SendLib Pro plan. A batch is queued once, then retrieve
 const created = await sendlib.batches.create(
   {
     from: '"Example Operations" <operations@example.com>',
-    subject: "Service update for {{name}}",
+    subject: 'Service update for {{name}}',
     recipients: [
-      { email: "ada@example.com", variables: { name: "Ada" } },
-      { email: "grace@example.com", variables: { name: "Grace" } },
+      { email: 'ada@example.com', variables: { name: 'Ada' } },
+      { email: 'grace@example.com', variables: { name: 'Grace' } },
     ],
-    html: "<p>Hello {{name}}, your service update is ready.</p>",
-    text: "Hello {{name}}, your service update is ready.",
-    replyTo: "support@example.com",
+    html: '<p>Hello {{name}}, your service update is ready.</p>',
+    text: 'Hello {{name}}, your service update is ready.',
+    replyTo: 'support@example.com',
   },
   { timeoutMs: 30_000 },
 );
@@ -430,12 +427,10 @@ const finalStatus = await sendlib.batches.wait(created.batchId, {
   returnOnPausedLimit: true,
 });
 
-if (finalStatus.status === "paused_limit_reached") {
-  console.info(
-    "Gmail quota paused the batch; persist its ID and check again later.",
-  );
+if (finalStatus.status === 'paused_limit_reached') {
+  console.info('Gmail quota paused the batch; persist its ID and check again later.');
 } else {
-  console.info("Batch completed:", finalStatus.sent, finalStatus.failed);
+  console.info('Batch completed:', finalStatus.sent, finalStatus.failed);
 }
 ```
 
@@ -444,7 +439,7 @@ For `wait()`, `timeoutMs` is the deadline for the entire polling operation, not 
 ### Cancel batch polling
 
 ```ts
-import { SendlibAbortError } from "@sendlib/node-sdk";
+import { SendlibAbortError } from '@sendlib/node-sdk';
 
 const pollingController = new AbortController();
 
@@ -459,9 +454,7 @@ try {
   await polling;
 } catch (error: unknown) {
   if (error instanceof SendlibAbortError) {
-    console.info(
-      "Batch polling was cancelled; the remote batch was not cancelled.",
-    );
+    console.info('Batch polling was cancelled; the remote batch was not cancelled.');
   } else {
     throw error;
   }
@@ -490,7 +483,7 @@ import {
   SendlibRateLimitError,
   SendlibTimeoutError,
   SendlibValidationError,
-} from "@sendlib/node-sdk";
+} from '@sendlib/node-sdk';
 
 function describeSendlibError(error: unknown): string {
   // Check subclasses before their parent classes.
@@ -498,16 +491,16 @@ function describeSendlibError(error: unknown): string {
     return `The ${error.feature} feature requires the ${error.requiredPlan} plan.`;
   }
   if (error instanceof SendlibAuthenticationError) {
-    return "Check or rotate the server-side API key.";
+    return 'Check or rotate the server-side API key.';
   }
   if (error instanceof SendlibPayloadTooLargeError) {
-    return "Reduce the message or attachment size.";
+    return 'Reduce the message or attachment size.';
   }
   if (error instanceof SendlibRateLimitError) {
-    return `Rate limited; retry after ${error.retryAfterMs ?? "an unknown number of"} ms.`;
+    return `Rate limited; retry after ${error.retryAfterMs ?? 'an unknown number of'} ms.`;
   }
   if (error instanceof SendlibForbiddenError) {
-    return "The authenticated account is not allowed to perform this operation.";
+    return 'The authenticated account is not allowed to perform this operation.';
   }
   if (error instanceof SendlibBatchFailedError) {
     return `Batch ${error.batchId} reached the failed state.`;
@@ -522,28 +515,28 @@ function describeSendlibError(error: unknown): string {
     return `Invalid call input: ${error.message}`;
   }
   if (error instanceof SendlibTimeoutError) {
-    return "One SendLib HTTP attempt timed out.";
+    return 'One SendLib HTTP attempt timed out.';
   }
   if (error instanceof SendlibAbortError) {
-    return "The caller cancelled the operation.";
+    return 'The caller cancelled the operation.';
   }
   if (error instanceof SendlibNetworkError) {
-    return "No HTTP response was received from SendLib.";
+    return 'No HTTP response was received from SendLib.';
   }
   if (error instanceof SendlibApiError) {
-    return `SendLib returned HTTP ${error.status}; request ID: ${error.requestId ?? "unknown"}.`;
+    return `SendLib returned HTTP ${error.status}; request ID: ${error.requestId ?? 'unknown'}.`;
   }
   if (error instanceof SendlibError) {
     return error.message;
   }
-  return "An unexpected non-SendLib error occurred.";
+  return 'An unexpected non-SendLib error occurred.';
 }
 
 try {
   await sendlib.emails.send({
-    to: "ada@example.com",
-    subject: "Your account update",
-    html: "<p>Your account update is ready.</p>",
+    to: 'ada@example.com',
+    subject: 'Your account update',
+    html: '<p>Your account update is ready.</p>',
   });
 } catch (error: unknown) {
   console.error(describeSendlibError(error));

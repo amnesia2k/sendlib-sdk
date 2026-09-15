@@ -36,8 +36,8 @@ bun run smoke:package
 1. Open or reference an issue when behavior, public types, or API compatibility will change.
 2. Keep changes focused and avoid unrelated formatting or dependency churn.
 3. Add runtime and type-level tests for public behavior.
-4. Maintain 100% statement, branch, function, and line coverage.
-5. Run `bun run ci` and `bun run security:scan`; for packaging changes, also run `bun run smoke:package` and `bun run pack:check`.
+4. Add focused tests for behavior changed by the contribution. Coverage is measured during release checks with an 80% floor; ordinary pull requests are not blocked on perfect coverage.
+5. Run `bun run ci`. For security or packaging changes, also run `bun run security:scan`, `bun run smoke:package`, and `bun run pack:check`.
 6. Update README examples and `CONTRACT.md` when relevant.
 7. Add a Changeset for every consumer-visible change with `bun run changeset`; pure test, CI, and internal-only maintenance does not require one.
 

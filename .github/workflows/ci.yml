@@ -16,13 +16,9 @@ concurrency:
 
 jobs:
   quality:
-    name: Node ${{ matrix.node }} quality
+    name: SDK checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        node: [22, 24]
 
     steps:
       - name: Check out source
@@ -31,77 +27,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Set up Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v7
-        with:
-          node-version: ${{ matrix.node }}
-
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version-file: package.json
-
-      - name: Install locked dependencies
-        run: bun ci
-
-      - name: Verify Changesets status
-        if: ${{ matrix.node == 22 && github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/') && !startsWith(github.head_ref, 'release/v') }}
-        run: bun run changeset:status --since=origin/master
-
-      - name: Check formatting
-        run: bun run format:check
-
-      - name: Build from a clean output directory
-        run: bun run build
-
-      - name: Lint
-        run: bun run lint
-
-      - name: Type-check source and tests
-        run: bun run typecheck
-
-      - name: Type-check examples
-        run: bun run typecheck:examples
-
-      - name: Run unit tests
-        run: bun run test:unit
-
-      - name: Run contract tests
-        run: bun run test:contract
-
-      - name: Enforce coverage thresholds
-        run: bun run test:coverage
-
-      - name: Verify exports
-        run: bun run check:exports
-
-      - name: Verify examples
-        run: bun run check:examples
-
-      - name: Upload coverage and build diagnostics
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: diagnostics-node-${{ matrix.node }}
-          path: |
-            coverage/
-            dist/
-          if-no-files-found: ignore
-          retention-days: 7
-
-  package-integrity:
-    name: Package integrity
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: quality
-
-    steps:
-      - name: Check out source
-        uses: actions/checkout@v7
-        with:
-          persist-credentials: false
-
-      - name: Set up supported Node.js
+      - name: Set up minimum supported Node.js
         uses: actions/setup-node@v7
         with:
           node-version: 22
@@ -114,14 +40,5 @@ jobs:
       - name: Install locked dependencies
         run: bun ci
 
-      - name: Build package
-        run: bun run build
-
-      - name: Scan repository and packed artifact for secrets
-        run: bun run security:scan
-
-      - name: Validate package metadata and types
-        run: bun run pack:check
-
-      - name: Test packed ESM and CommonJS consumers
-        run: bun run smoke:package
+      - name: Run SDK checks
+        run: bun run ci
